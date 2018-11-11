@@ -73,10 +73,6 @@ Resources:
     ECSLaunchConfiguration:
         Type: AWS::AutoScaling::LaunchConfiguration
         Properties:
-            BlockDeviceMappings:
-                - DeviceName: /dev/xvda
-                  Ebs:
-                    VolumeSize: 16
             ImageId: !Ref ECSAMI
             InstanceType: !Ref InstanceType
             SecurityGroups:
@@ -90,6 +86,7 @@ Resources:
                     yum install -y aws-cfn-bootstrap hibagent 
                     /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
                     /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup
+                    /usr/bin/enable-ec2-spot-hibernation
 
         Metadata:
             AWS::CloudFormation::Init:
@@ -101,9 +98,7 @@ Resources:
                     commands:
                         01_add_instance_to_cluster:
                             command: !Sub echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
-                        02_enable_ec2_spot_hibernation:
-                            command: /usr/bin/enable-ec2-spot-hibernation
-                        03_enable_cloudwatch_agent:
+                        02_enable_cloudwatch_agent:
                             command: !Sub /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:${ECSCloudWatchParameter} -s
                     files:
                         /etc/cfn/cfn-hup.conf:
