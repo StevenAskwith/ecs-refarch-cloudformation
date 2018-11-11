@@ -73,15 +73,11 @@ Resources:
     ECSLaunchConfiguration:
         Type: AWS::AutoScaling::LaunchConfiguration
         Properties:
-<<<<<<< HEAD
             BlockDeviceMappings:
                 - DeviceName: /dev/xvda
                   Ebs:
-                    VolumeSize: 16   
-            ImageId:  !FindInMap [AWSRegionToAMI, !Ref "AWS::Region", AMI]
-=======
+                    VolumeSize: 16
             ImageId: !Ref ECSAMI
->>>>>>> master
             InstanceType: !Ref InstanceType
             SecurityGroups:
                 - !Ref SecurityGroup
